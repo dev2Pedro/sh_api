@@ -6,7 +6,9 @@ import { PrismaClient } from "@prisma/client";
 const app = Fastify({ logger: true });
 const prisma = new PrismaClient();
 
-await app.register(cors, { origin: "*" });
+await app.register(cors, {
+  origin: ["http://localhost:3000"],
+});
 
 app.get("/", async () => {
   return { message: "Hello World" };
