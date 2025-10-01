@@ -3,11 +3,12 @@ import cors from "@fastify/cors";
 import nodemailer from "nodemailer";
 import { PrismaClient } from "@prisma/client";
 
-const app = Fastify({ logger: true });
+const app = Fastify({ logger: false });
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
 const prisma = new PrismaClient();
 
 await app.register(cors, {
-  origin: ["http://localhost:3000"],
+  origin: [FRONTEND_URL],
 });
 
 app.get("/", async () => {
