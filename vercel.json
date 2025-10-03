@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "src/server.ts",
+      "use": "@vercel/node",
+      "config": { "tsconfig": "tsconfig.json" }
+    }
+  ],
+  "env": {
+    "DATABASE_URL": "@database_url",
+    "EMAIL_USER": "@email_user",
+    "EMAIL_PASS": "@email_pass",
+    "FRONTEND_URL": "@frontend_url"
+  }
+}
