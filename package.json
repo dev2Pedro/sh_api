@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts"
   },
   "keywords": [],
@@ -19,7 +21,8 @@
     "dotenv": "^17.2.3",
     "fastify": "^5.6.1",
     "nodemailer": "^7.0.6",
-    "pg": "^8.16.3"
+    "pg": "^8.16.3",
+    "serverless-http": "^4.0.0"
   },
   "devDependencies": {
     "@types/node": "^24.6.1",
