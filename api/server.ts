@@ -1,19 +1,25 @@
+// api/server.ts
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import nodemailer from "nodemailer";
 import { PrismaClient } from "@prisma/client";
-import serverless from "serverless-http";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const prisma = new PrismaClient();
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
+const PORT = process.env.PORT ? Number(process.env.PORT) : 3333;
 
-const app = Fastify();
+const app = Fastify({ logger: true });
 
+// CORS
 app.register(cors, { origin: [FRONTEND_URL] });
 
+// Rotas
 app.get("/", async () => ({ message: "Hello World" }));
 
-app.post("/contact", async (request: any) => {
+app.post("/contact", async (request: any, reply) => {
   const body = request.body as {
     name: string;
     email: string;
@@ -25,6 +31,7 @@ app.post("/contact", async (request: any) => {
   try {
     const phone = body.phone ?? null;
 
+    // Salva no banco
     await prisma.contact.create({
       data: {
         name: body.name,
@@ -35,6 +42,7 @@ app.post("/contact", async (request: any) => {
       },
     });
 
+    // Envia email
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -51,14 +59,23 @@ app.post("/contact", async (request: any) => {
       text: `${body.message}\n\nTelefone: ${phone || "Não informado"}`,
     });
 
-    return {
+    return reply.send({
       success: true,
       message: "Contato salvo e email enviado com sucesso!",
-    };
+    });
   } catch (error) {
     console.error(error);
-    return { success: false, message: "Erro ao processar contato" };
+    return reply
+      .status(500)
+      .send({ success: false, message: "Erro ao processar contato" });
   }
 });
 
-export const handler = serverless(app as any);
+// Inicia servidor
+app.listen({ port: PORT, host: "0.0.0.0" }, (err, address) => {
+  if (err) {
+    console.error(err);
+    process.exit(1);
+  }
+  console.log(`Servidor rodando em: ${address}`);
+});
